@@ -1,6 +1,6 @@
 import React from 'react';
 
-function SentenceDisplay({ sentence, onReset }) {  // Changed to use props
+function SentenceDisplay({ sentence, onReset }) {
   return (
     <div style={{ marginBottom: '20px' }}>
       <h2>Current Sentence:</h2>
@@ -23,5 +23,4 @@ function SentenceDisplay({ sentence, onReset }) {  // Changed to use props
     </div>
   );
 }
-
 export default SentenceDisplay;

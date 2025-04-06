@@ -1,11 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-function Camera({ onPrediction }) {  // Added prop
+function Camera({ onPrediction }) {
   const videoRef = useRef(null);
   const [isPredicting, setIsPredicting] = useState(false);
   const intervalRef = useRef();
 
-  // Start prediction loop
   const startPrediction = () => {
     setIsPredicting(true);
     intervalRef.current = setInterval(async () => {
@@ -17,23 +16,27 @@ function Camera({ onPrediction }) {  // Added prop
         
         const imageData = canvas.toDataURL('image/jpeg');
         
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/predict`, {
+        const response = await fetch("https://595gkvigtd.execute-api.eu-north-1.amazonaws.com/default/sign-language-backend", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: imageData })
         });
 
+        if (!response.ok) throw new Error('Network response was not ok');
+        
         const data = await response.json();
-        if (data.gesture) {
-          onPrediction(data.gesture, data.sentence);  // Notify parent
+        if (data.body) {
+          const result = JSON.parse(data.body);
+          if (result.gesture) {
+            onPrediction(result.gesture, result.sentence);
+          }
         }
       } catch (error) {
         console.error('Prediction error:', error);
       }
-    }, 2000);  // Predict every 2 seconds
+    }, 2000);
   };
 
-  // Stop prediction
   const stopPrediction = () => {
     setIsPredicting(false);
     clearInterval(intervalRef.current);
@@ -44,7 +47,7 @@ function Camera({ onPrediction }) {  // Added prop
       .then(stream => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          startPrediction();  // Auto-start predictions
+          startPrediction();
         }
       })
       .catch(console.error);
@@ -63,7 +66,7 @@ function Camera({ onPrediction }) {  // Added prop
       <video 
         ref={videoRef} 
         autoPlay 
-        muted  // Added to avoid audio issues
+        muted
         style={{ width: '640px', height: '480px', border: '1px solid black' }}
       ></video>
       <div>
@@ -77,5 +80,4 @@ function Camera({ onPrediction }) {  // Added prop
     </div>
   );
 }
-
 export default Camera;

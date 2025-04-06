@@ -5,14 +5,8 @@ import SentenceDisplay from './components/SentenceDisplay';
 function App() {
   const [sentence, setSentence] = useState("");
 
-  const handleReset = async () => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/reset`);
-      const data = await response.json();
-      setSentence(data.sentence);
-    } catch (error) {
-      console.error("Error resetting sentence:", error);
-    }
+  const handleReset = () => {
+    setSentence("");
   };
 
   const handlePrediction = (gesture, newSentence) => {
@@ -30,5 +24,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
