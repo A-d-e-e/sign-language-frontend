@@ -9,32 +9,37 @@ function Camera({ onPrediction }) {
     setIsPredicting(true);
     intervalRef.current = setInterval(async () => {
       try {
+        // Create a canvas element to capture a frame from the video
         const canvas = document.createElement('canvas');
         canvas.width = videoRef.current.videoWidth;
         canvas.height = videoRef.current.videoHeight;
         canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
         
+        // Convert canvas image to base64 data URL
         const imageData = canvas.toDataURL('image/jpeg');
         
+        // Call the AWS Lambda (API Gateway URL)
         const response = await fetch("https://595gkvigtd.execute-api.eu-north-1.amazonaws.com/default/sign-language-backend", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageData })
+          body: JSON.stringify({ image: imageData, sentence: "" }) // You can send current sentence if needed
         });
 
         if (!response.ok) throw new Error('Network response was not ok');
         
         const data = await response.json();
+        // API Gateway might encapsulate the response body as a JSON string inside data.body
+        let result = data;
         if (data.body) {
-          const result = JSON.parse(data.body);
-          if (result.gesture) {
-            onPrediction(result.gesture, result.sentence);
-          }
+          result = JSON.parse(data.body);
+        }
+        if (result.gesture) {
+          onPrediction(result.gesture, result.sentence);
         }
       } catch (error) {
         console.error('Prediction error:', error);
       }
-    }, 2000);
+    }, 2000); // Every 2 seconds
   };
 
   const stopPrediction = () => {
@@ -80,4 +85,5 @@ function Camera({ onPrediction }) {
     </div>
   );
 }
+
 export default Camera;
