@@ -23,4 +23,5 @@ function SentenceDisplay({ sentence, onReset }) {
     </div>
   );
 }
+
 export default SentenceDisplay;
