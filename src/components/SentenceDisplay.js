@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const API_URL_BASE = "https://vs338bdfg2.execute-api.eu-north-1.amazonaws.com/default/HandGestureBackend";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://vs338bdfg2.execute-api.eu-north-1.amazonaws.com/default/HandGestureBackend";
 
 function SentenceDisplay() {
   const [sentence, setSentence] = useState("");
 
   const fetchSentence = async () => {
     try {
-      const response = await fetch('${API_BASE_URL}/sentence');
+      const response = await fetch(`${API_BASE_URL}/sentence`);
       const data = await response.json();
       setSentence(data.sentence);
     } catch (error) {
@@ -22,7 +22,7 @@ function SentenceDisplay() {
 
   const handleReset = async () => {
     try {
-      const response = await fetch('${API_URL_BASE}/reset');
+      const response = await fetch(`${API_URL_BASE}/reset`);
       const data = await response.json();
       setSentence(data.sentence);
     } catch (error) {
